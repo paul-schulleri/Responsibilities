@@ -1,0 +1,19 @@
+{
+    "name": "schulleri/responsibilities",
+    "description": "Responsibilities Handler ",
+    "type": "library",
+    "require": {
+        "php": ">=7.0"
+    },
+    "autoload": {
+        "psr-4": {
+            "Schulleri\\Responsibilities\\": "src/"
+        }
+    },
+    "authors": [
+        {
+            "name": "Paul Schulleri",
+            "email": "paul@schulleri.com"
+        }
+    ]
+}
