@@ -1,5 +1,4 @@
 <?php
-declare(strict_types = 1);
 namespace Schulleri\Responsibilities\Helper;
 
 use Schulleri\Responsibilities\Contracts\HandlerContract;
@@ -16,10 +15,9 @@ class HandlerBuilder
      * @return HandlerContract
      * @throws OutOfBoundsException
      */
-    public function build(array $handlerList):HandlerContract
+    public function build(array $handlerList): HandlerContract
     {
         $handler = array_shift($handlerList);
-
         if ($handler !== null && class_exists($handler)) {
             return new $handler($handlerList, $this);
         }
