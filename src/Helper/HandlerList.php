@@ -1,6 +1,7 @@
 <?php
-declare(strict_types = 1);
 namespace Schulleri\Responsibilities\Helper;
+
+use InvalidArgumentException;
 
 /**
  * Class HandlerList
@@ -8,55 +9,92 @@ namespace Schulleri\Responsibilities\Helper;
  */
 class HandlerList
 {
+    /** @var string */
+    private $directory;
+
+    /**
+     * HandlerList constructor.
+     * @param string $directory
+     */
+    public function __construct(string $directory = __DIR__ . '/../../')
+    {
+        $this->directory = $directory;
+    }
+
     /**
      * @param string $subset
      * @return array
+     * @throws InvalidArgumentException
      */
-    public function get(string $subset):array
+    public function get(string $subset): array
     {
-        $files = str_replace('.php', '', preg_grep('~\.(php)$~', scandir(
-            $this->handlerDirectory($subset)
-        )));
+        $files = scandir($this->getNamespaceDirectory($subset));
 
-        $files = array_map(function ($val) use ($subset) {
-            return $this->handlerNamespace($subset) . $val;
+        $classes = array_map(function ($file) use ($subset) {
+            return $subset . '\\' . str_replace('.php', '', $file);
         }, $files);
 
-        return array_values($files);
+        return array_filter($classes, function ($possibleClass) {
+            return class_exists($possibleClass);
+        });
     }
 
     /**
-     * @param $subset
-     * @return string
+     * @return array
      */
-    private function handlerDirectory($subset):string
+    private function getDefinedNamespaces(): array
     {
-        $directory = dirname(__DIR__) . DIRECTORY_SEPARATOR;
-        $directory .= 'Handler' . DIRECTORY_SEPARATOR;
+        $composerConfig = json_decode(file_get_contents(
+            $this->directory . 'composer.json'
+        ));
 
-        return $directory . $subset . DIRECTORY_SEPARATOR;
+        return (array)((array)$composerConfig->autoload)['psr-4'];
     }
 
     /**
-     * @param $subset
-     * @return string
+     * @param $namespace
+     * @return bool|string
      */
-    private function handlerNamespace($subset):string
+    private function getNamespaceDirectory($namespace)
     {
-        $namespace = $this->parentNamespace() . '\\';
-        $namespace .= 'Handler' . '\\';
+        $composerNamespaces = $this->getDefinedNamespaces();
+        $namespaceFragments = explode('\\', $namespace);
+        $undefinedNamespaceFragments = [];
 
-        return $namespace . $subset . '\\';
+        while ($namespaceFragments) {
+            $possibleNamespace = implode('\\', $namespaceFragments) . '\\';
+            if (array_key_exists($possibleNamespace, $composerNamespaces)) {
+
+                return $this->getPath(
+                    $composerNamespaces,
+                    $possibleNamespace,
+                    $undefinedNamespaceFragments
+                );
+            }
+
+            $undefinedNamespaceFragments[] = array_pop(
+                $namespaceFragments
+            );
+        }
+
+        return false;
     }
 
     /**
+     * @param $composerNamespaces
+     * @param $possibleNamespace
+     * @param $undefinedNamespaceFragments
      * @return string
      */
-    private function parentNamespace():string
-    {
-        $path = explode("\\", __NAMESPACE__);
-        array_pop($path);
-        
-        return implode("\\", $path);
+    private function getPath(
+        $composerNamespaces,
+        $possibleNamespace,
+        $undefinedNamespaceFragments
+    ): string {
+        $path = $this->directory;
+        $path .= $composerNamespaces[$possibleNamespace];
+        $path .= implode('/', $undefinedNamespaceFragments);
+
+        return realpath($path);
     }
 }

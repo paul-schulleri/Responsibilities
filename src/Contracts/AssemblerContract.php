@@ -1,5 +1,4 @@
 <?php
-declare(strict_types = 1);
 namespace Schulleri\Responsibilities\Contracts;
 
 /**
@@ -9,9 +8,9 @@ namespace Schulleri\Responsibilities\Contracts;
 interface AssemblerContract
 {
     /**
-     * @param string $subject
+     * @param string $key
      * @param string $subset
      * @return mixed
      */
-    public function run(string $subject, string $subset);
+    public function run(string $key, string $subset);
 }

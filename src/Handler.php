@@ -1,11 +1,9 @@
 <?php
-declare(strict_types = 1);
 namespace Schulleri\Responsibilities;
 
 use OutOfBoundsException;
 use Schulleri\Responsibilities\Contracts\HandlerContract;
 use Schulleri\Responsibilities\Helper\HandlerBuilder;
-use ReflectionClass;
 
 /**
  * Class Handler
@@ -30,45 +28,32 @@ abstract class Handler implements HandlerContract
     }
 
     /**
-     * @param string $subject
+     * @param string $key
      * @return mixed|null
      */
-    final public function handle(string $subject)
+    final public function handle(string $key)
     {
-        $processed = $this->processing($subject);
+        $processed = $this->processing($key);
 
         if ($processed === null && $this->successor !== null) {
-            $processed = $this->successor->handle($subject);
+            $processed = $this->successor->handle($key);
         }
 
         return $processed;
     }
 
     /**
-     * @param string $subject
+     * @param string $key
      * @return mixed|null
      */
-    final protected function processing(string $subject)
+    final protected function processing(string $key)
     {
-        if ($this->currentHandlerName() === $subject) {
-            return $this->execute();
-        }
-
-        return null;
+        return $this->execute($key) ?: null;
     }
 
     /**
-     * @return string
-     */
-    private function currentHandlerName():string
-    {
-        return strtolower(
-            (new ReflectionClass(get_called_class()))->getShortName()
-        );
-    }
-
-    /**
+     * @param $key
      * @return mixed
      */
-    protected abstract function execute();
+    protected abstract function execute($key);
 }

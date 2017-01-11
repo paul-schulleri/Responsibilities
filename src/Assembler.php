@@ -1,7 +1,7 @@
 <?php
-declare(strict_types = 1);
 namespace Schulleri\Responsibilities;
 
+use InvalidArgumentException;
 use OutOfBoundsException;
 use Schulleri\Responsibilities\Contracts\AssemblerContract;
 use Schulleri\Responsibilities\Helper\HandlerBuilder;
@@ -33,16 +33,17 @@ class Assembler implements AssemblerContract
     }
 
     /**
-     * @param string $subject
-     * @param string
-     * @throws OutOfBoundsException
+     * @param string $key
+     * @param string $subset
      * @return mixed
+     * @throws OutOfBoundsException
+     * @throws InvalidArgumentException
      */
-    public function run(string $subject, string $subset)
+    public function run(string $key, string $subset)
     {
         $handlerList = $this->handlerList->get($subset);
         $handler = $this->handlerBuilder->build($handlerList);
 
-        return $handler->handle($subject);
+        return $handler->handle($key);
     }
 }
