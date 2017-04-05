@@ -15,13 +15,13 @@ class StorageC extends Handler
     ];
 
     /**
-     * @param $key
+     * @param $reference
      * @return array
      */
-    protected function execute($key)
+    protected function execute($reference)
     {
-        if (array_key_exists($key, $this->data)) {
-            return $this->data[$key];
+        if (array_key_exists($reference, $this->data)) {
+            return $this->data[$reference];
         }
 
         return null;

@@ -17,8 +17,8 @@ interface HandlerContract
     public function __construct(array $handlers, HandlerBuilder $handlerBuilder);
 
     /**
-     * @param string $key
+     * @param $reference
      * @return mixed
      */
-    public function handle(string $key);
+    public function handle($reference);
 }

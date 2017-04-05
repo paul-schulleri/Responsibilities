@@ -3,6 +3,5 @@
 /vendor
 /.idea
 /.vagrant
-/_ide_helper.php
 /tests/_output/
 /.phpstorm.meta.php

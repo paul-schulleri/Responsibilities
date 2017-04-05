@@ -28,32 +28,32 @@ abstract class Handler implements HandlerContract
     }
 
     /**
-     * @param string $key
+     * @param $reference
      * @return mixed|null
      */
-    final public function handle(string $key)
+    final public function handle($reference)
     {
-        $processed = $this->processing($key);
+        $processed = $this->processing($reference);
 
         if ($processed === null && $this->successor !== null) {
-            $processed = $this->successor->handle($key);
+            $processed = $this->successor->handle($reference);
         }
 
         return $processed;
     }
 
     /**
-     * @param string $key
+     * @param $reference
      * @return mixed|null
      */
-    final protected function processing(string $key)
+    final protected function processing($reference)
     {
-        return $this->execute($key) ?: null;
+        return $this->execute($reference) ?: null;
     }
 
     /**
-     * @param $key
+     * @param $reference
      * @return mixed
      */
-    protected abstract function execute($key);
+    protected abstract function execute($reference);
 }
