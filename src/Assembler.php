@@ -33,17 +33,17 @@ class Assembler implements AssemblerContract
     }
 
     /**
-     * @param string $key
+     * @param $reference
      * @param string $subset
      * @return mixed
      * @throws OutOfBoundsException
      * @throws InvalidArgumentException
      */
-    public function run(string $key, string $subset)
+    public function run($reference, string $subset)
     {
         $handlerList = $this->handlerList->get($subset);
         $handler = $this->handlerBuilder->build($handlerList);
 
-        return $handler->handle($key);
+        return $handler->handle($reference);
     }
 }

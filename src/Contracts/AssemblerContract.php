@@ -8,9 +8,9 @@ namespace Schulleri\Responsibilities\Contracts;
 interface AssemblerContract
 {
     /**
-     * @param string $key
+     * @param $reference
      * @param string $subset
      * @return mixed
      */
-    public function run(string $key, string $subset);
+    public function run($reference, string $subset);
 }
