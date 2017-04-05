@@ -13,4 +13,10 @@ interface AssemblerContract
      * @return mixed
      */
     public function run($reference, string $subset);
+
+    /**
+     * @param string $directory
+     * @return AssemblerContract
+     */
+    public function setHandlerListDirectory(string $directory): AssemblerContract;
 }

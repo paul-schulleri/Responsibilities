@@ -1,4 +1,5 @@
 <?php
+
 namespace Schulleri\Responsibilities;
 
 use InvalidArgumentException;
@@ -45,5 +46,16 @@ class Assembler implements AssemblerContract
         $handler = $this->handlerBuilder->build($handlerList);
 
         return $handler->handle($reference);
+    }
+
+    /**
+     * @param string $directory
+     * @return AssemblerContract
+     */
+    public function setHandlerListDirectory(string $directory): AssemblerContract
+    {
+        $this->handlerList->setDirectory($directory);
+
+        return $this;
     }
 }
