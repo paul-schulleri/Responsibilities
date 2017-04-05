@@ -18,7 +18,7 @@ class HandlerList
      */
     public function __construct(string $directory = __DIR__ . '/../../')
     {
-        $this->directory = $directory;
+        $this->setDirectory($directory);
     }
 
     /**
@@ -37,6 +37,14 @@ class HandlerList
         return array_filter($classes, function ($possibleClass) {
             return class_exists($possibleClass);
         });
+    }
+
+    /**
+     * @param string $directory
+     */
+    public function setDirectory(string $directory)
+    {
+        $this->directory = $directory;
     }
 
     /**

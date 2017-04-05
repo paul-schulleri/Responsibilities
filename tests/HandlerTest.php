@@ -29,4 +29,25 @@ class HandlerTest extends TestCase
             'peter', $assembler->run('356a', $exampleNamespace)
         );
     }
+
+    /**
+     *
+     */
+    public function testDirectoryOverwrite()
+    {
+        $builder = new HandlerBuilder();
+        $handlerList = new HandlerList();
+
+        $assembler = new Assembler(
+            $builder, $handlerList
+        );
+
+        $assembler->setHandlerListDirectory(__DIR__ . '/../');
+
+        $exampleNamespace = 'Schulleri\\Responsibilities\\Examples';
+
+        $this->assertEquals(
+            'peter', $assembler->run('356a', $exampleNamespace)
+        );
+    }
 }
