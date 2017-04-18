@@ -1,4 +1,5 @@
 <?php
+
 namespace Schulleri\Responsibilities\Helper;
 
 use InvalidArgumentException;
@@ -30,13 +31,13 @@ class HandlerList
     {
         $files = scandir($this->getNamespaceDirectory($subset));
 
-        $classes = array_map(function ($file) use ($subset) {
-            return $subset . '\\' . str_replace('.php', '', $file);
-        }, $files);
+        $classes = $this->appendNamespace($subset, $files);
 
-        return array_filter($classes, function ($possibleClass) {
+        $classesExisting = array_filter($classes, function ($possibleClass) {
             return class_exists($possibleClass);
         });
+
+        return $this->sortByOrderList($subset, $classesExisting);
     }
 
     /**
@@ -63,7 +64,7 @@ class HandlerList
      * @param $namespace
      * @return bool|string
      */
-    private function getNamespaceDirectory($namespace)
+    private function getNamespaceDirectory(string $namespace)
     {
         $composerNamespaces = $this->getDefinedNamespaces();
         $namespaceFragments = explode('\\', $namespace);
@@ -95,14 +96,51 @@ class HandlerList
      * @return string
      */
     private function getPath(
-        $composerNamespaces,
-        $possibleNamespace,
-        $undefinedNamespaceFragments
+        array $composerNamespaces,
+        string $possibleNamespace,
+        array $undefinedNamespaceFragments
     ): string {
         $path = $this->directory;
         $path .= $composerNamespaces[$possibleNamespace];
         $path .= implode('/', $undefinedNamespaceFragments);
 
         return realpath($path);
+    }
+
+    /**
+     * @param string $subset
+     * @param $files
+     * @return array
+     */
+    private function appendNamespace(string $subset, array $files): array
+    {
+        $classes = array_map(function ($file) use ($subset) {
+            return $subset . '\\' . str_replace('.php', '', $file);
+        }, $files);
+        return $classes;
+    }
+
+    /**
+     * @param string $subset
+     * @param $classes
+     * @return array
+     */
+    private function sortByOrderList(string $subset, array $classes): array
+    {
+        $filename = $this->getNamespaceDirectory($subset) . '/Order.json';
+
+        if (!file_exists($filename)) {
+            return $classes;
+        }
+
+        $orderList = array_flip($this->appendNamespace(
+            $subset, json_decode(file_get_contents($filename))
+        ));
+
+        usort($classes, function ($a, $b) use ($orderList) {
+            return $orderList[$a] > $orderList[$b] ? 1 : -1;
+        });
+
+        return $classes;
     }
 }
